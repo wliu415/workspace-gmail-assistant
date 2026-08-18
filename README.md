@@ -1,6 +1,6 @@
 # 🤖 Workspace Gmail Assistant with Google Cloud Agent Identity Auth Manager
 
-A production-ready Google Workspace Gmail AI Agent integration using **Google Cloud IAM Agent Identity Auth Manager** ([Official Documentation](https://docs.cloud.google.com/iam/docs/auth-manager-overview)).
+A sample Google Workspace Gmail AI Agent integration demonstrating **Google Cloud IAM Agent Identity Auth Manager** ([Official Documentation](https://docs.cloud.google.com/iam/docs/auth-manager-overview)).
 
 ---
 
