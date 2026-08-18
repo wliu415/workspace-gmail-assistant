@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Architecture Diagram - Agent Identity Auth Manager</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      max-width: 1000px;
+      width: 100%;
+    }
+    h2 {
+      color: #1a73e8;
+      margin-top: 0;
+      text-align: center;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🏛️ Google Cloud Agent Identity Auth Manager Architecture</h2>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as User (user@yourdomain.com)
+    participant CLI as CLI / AI Agent
+    participant Vault as GCP IAM Auth Manager Vault
+    participant OAuth as Google OAuth 2.0
+    participant Gmail as Gmail API
+
+    Note over User,Gmail: Phase 1: One-Time Authorization & Token Vaulting
+    CLI->>Vault: Retrieve credentials (with continue_uri=http://localhost:8501)
+    Vault-->>CLI: Returns uri_consent_required (with signed state parameter)
+    CLI->>User: Opens browser with signed authorization URL
+    User->>OAuth: Grants consent for Gmail scopes
+    OAuth->>Vault: Redirects to Auth Manager callback with auth code
+    Vault->>OAuth: Exchanges code for Refresh Token
+    Vault->>Vault: Stores Refresh Token securely under /authorizations
+    Vault->>CLI: Redirects to localhost:8501 (finalizes registration)
+
+    Note over User,Gmail: Phase 2: Autonomous Agent Operation (No further consent needed)
+    CLI->>Vault: client.retrieve_credentials(force_refresh=False)
+    Vault-->>CLI: Returns active short-lived Bearer Token (ya29...)
+    CLI->>Gmail: users().messages().send() / getProfile() with Bearer Token
+    Gmail-->>CLI: Operation executed successfully!
+    </div>
+  </div>
+</body>
+</html>
